@@ -15,11 +15,12 @@ const RecommendationUI = () => {
   const [recommendations, setRecommendations] = useState([]);
   const [allItems, setAllItems] = useState([]);  // State untuk menyimpan daftar barang
 
+  const BASE_URL = "https://66decc25-a2cd-4922-8b07-89275b3e82e4-00-35iyrzpfynthr.pike.replit.dev.repl.co";
+
   // Ambil daftar barang dari backend saat komponen dimuat
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const BASE_URL = "https://66decc25-a2cd-4922-8b07-89275b3e82e4-00-35iyrzpfynthr.pike.replit.dev.repl.co"; 
         const response = await fetch(`${BASE_URL}/items`);
         const data = await response.json();
         console.log("Data Barang:", data);  // Menampilkan data yang diterima
@@ -30,10 +31,8 @@ const RecommendationUI = () => {
     };
   
     fetchItems();  // Panggil fungsi untuk mendapatkan data
-  }, []);  // Hanya dijalankan saat komponen pertama kali dimuat
+  }, [BASE_URL]);  // BASE_URL sebagai dependency
   
-  
-
   // Fungsi untuk memilih barang
   const toggleItem = (item) => {
     setSelectedItems((prev) =>
@@ -44,7 +43,7 @@ const RecommendationUI = () => {
   // Fungsi untuk submit dan mendapatkan rekomendasi
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://localhost:8000/recommend', {
+      const response = await fetch(`${BASE_URL}/recommend`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
