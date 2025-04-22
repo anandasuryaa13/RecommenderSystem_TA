@@ -19,7 +19,8 @@ const RecommendationUI = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/items");
+        const BASE_URL = "https://66decc25-a2cd-4922-8b07-89275b3e82e4-00-35iyrzpfynthr.pike.replit.dev.repl.co"; 
+        const response = await fetch(`${BASE_URL}/items`);
         const data = await response.json();
         console.log("Data Barang:", data);  // Menampilkan data yang diterima
         setAllItems(data.items);  // Menyimpan daftar items ke state
