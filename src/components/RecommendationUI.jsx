@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 // Komponen HTML pengganti UI library
-const Card = ({ children, className }) => <div className={`border rounded p-4 shadow ${className}`}>{children}</div>;
+const Card = ({ children, className }) => <div className={`border rounded p-4 shadow ${className} dark:bg-gray-800 dark:border-gray-700`}>{children}</div>;
 const CardContent = ({ children, className }) => <div className={className}>{children}</div>;
-const Button = ({ children, ...props }) => <button {...props} className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50">{children}</button>;
+const Button = ({ children, ...props }) => <button {...props} className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 dark:bg-blue-700">{children}</button>;
 const Checkbox = ({ checked, onCheckedChange }) => (
   <input type="checkbox" checked={checked} onChange={onCheckedChange} className="form-checkbox" />
 );
@@ -13,43 +13,71 @@ const RecommendationUI = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [preference, setPreference] = useState('item');
   const [recommendations, setRecommendations] = useState([]);
-  const [allItems, setAllItems] = useState([]);  // State untuk menyimpan daftar barang
+  const [allItems, setAllItems] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [brands, setBrands] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState('Semua');
+  const [darkMode, setDarkMode] = useState(false);
 
-  const BASE_URL = "https://web-production-1323a.up.railway.app";
+  const BASE_URL = "http://127.0.0.1:8000";  // Ganti dengan URL backend kamu
 
-  // Ambil daftar barang dari backend saat komponen dimuat
   useEffect(() => {
     const fetchItems = async () => {
       try {
         const response = await fetch(`${BASE_URL}/items`);
         const data = await response.json();
-        console.log("Data Barang:", data);  // Menampilkan data yang diterima
-        setAllItems(data.items);  // Menyimpan daftar items ke state
+        setAllItems(data.items);
       } catch (error) {
         console.error("Error fetching items:", error);
       }
     };
-  
-    fetchItems();  // Panggil fungsi untuk mendapatkan data
-  }, [BASE_URL]);  // BASE_URL sebagai dependency
-  
-  // Fungsi untuk memilih barang
+
+    const fetchBrands = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/brands`);
+        const data = await response.json();
+        setBrands(['Semua', ...data.brands]);
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
+    };
+
+    fetchItems();
+    fetchBrands();
+  }, [BASE_URL]);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
   const toggleItem = (item) => {
+    setSelectedItems((prev) => {
+      const exists = prev.find(i => i.item === item);
+      if (exists) {
+        return prev.filter(i => i.item !== item);
+      } else {
+        return [...prev, { item, qty: 1 }];
+      }
+    });
+  };
+
+  const updateQty = (item, qty) => {
     setSelectedItems((prev) =>
-      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
+      prev.map(i => i.item === item ? { ...i, qty: qty } : i)
     );
   };
 
-  // Fungsi untuk submit dan mendapatkan rekomendasi
   const handleSubmit = async () => {
     try {
       const response = await fetch(`${BASE_URL}/recommend`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          selected_items: selectedItems,
+          selected_items: selectedItems.map(i => i.item),
           preference_type: preference,
         }),
       });
@@ -59,39 +87,114 @@ const RecommendationUI = () => {
       }
 
       const data = await response.json();
-      setRecommendations(data.recommendations);  // Menyimpan rekomendasi yang diterima
+      setRecommendations(data.recommendations);
     } catch (error) {
       console.error('Error:', error);
-      setRecommendations([]);  // Jika error, kosongkan rekomendasi
+      setRecommendations([]);
     }
   };
 
+  const filteredItems = selectedBrand === 'Semua'
+    ? allItems
+    : allItems.filter(item => item.toLowerCase().includes(selectedBrand.toLowerCase()));
+
+  const searchedItems = filteredItems.filter(item =>
+    item.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-6 max-w-2xl mx-auto dark:bg-gray-900 dark:text-white">
+      {/* Toggle Dark Mode */}
+      <div className="flex justify-end mb-2">
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="px-2 py-1 border rounded bg-gray-200 dark:bg-gray-800 dark:text-white"
+        >
+          {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+        </button>
+      </div>
+
       <h2 className="text-2xl font-bold mb-4 bg-blue-500 text-white p-2 rounded">
-        Sistem Rekomendasi KNN
+        FROZEN FOOD
       </h2>
 
       <Card className="mb-4">
         <CardContent className="space-y-2">
-          <h3 className="font-semibold">1. Pilih Barang yang Dibeli:</h3>
+          <h3 className="font-semibold">Silahkan Pilih Item yang Diinginkan</h3>
+
+          {/* Filter Brand */}
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Filter berdasarkan Brand:</label>
+            <select
+              value={selectedBrand}
+              onChange={(e) => setSelectedBrand(e.target.value)}
+              className="border p-2 rounded w-full dark:bg-gray-700 dark:text-white"
+            >
+              {brands.map((brand, idx) => (
+                <option key={idx} value={brand}>{brand}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Search Bar */}
+          <input
+            type="text"
+            placeholder="Cari barang..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border p-2 rounded w-full mb-2 dark:bg-gray-700 dark:text-white"
+          />
+
+          {/* Daftar Barang */}
           <div className="grid grid-cols-2 gap-2">
-            {allItems.length > 0 ? (
-              allItems.map((item) => (
+            {searchedItems.length > 0 ? (
+              searchedItems.map((item) => (
                 <Label key={item} className="flex items-center space-x-2">
                   <Checkbox
-                    checked={selectedItems.includes(item)}
+                    checked={selectedItems.some(i => i.item === item)}
                     onCheckedChange={() => toggleItem(item)}
                   />
                   <span>{item}</span>
                 </Label>
               ))
             ) : (
-              <p>Memuat barang...</p>  // Jika data belum tersedia
+              <p>Memuat barang atau tidak ditemukan...</p>
             )}
           </div>
         </CardContent>
       </Card>
+
+      {/* Keranjang Belanja */}
+      {selectedItems.length > 0 && (
+        <Card className="mb-4">
+          <CardContent className="space-y-2">
+            <h3 className="font-semibold">Keranjang Kamu:</h3>
+            <ul className="list-disc list-inside">
+              {selectedItems.map(({ item, qty }, i) => (
+                <li key={i} className="flex justify-between items-center">
+                  {item}
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="number"
+                      min="1"
+                      value={qty}
+                      onChange={(e) => updateQty(item, parseInt(e.target.value))}
+                      className="w-16 border p-1 rounded dark:bg-gray-700 dark:text-white"
+                    />
+                    <button
+                      onClick={() => toggleItem(item)}
+                      className="text-red-500 hover:underline text-sm"
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="font-semibold">Total: {selectedItems.length} barang</p>
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="mb-4">
         <CardContent className="space-y-2">
