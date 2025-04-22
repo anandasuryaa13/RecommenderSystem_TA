@@ -15,7 +15,7 @@ const RecommendationUI = () => {
   const [recommendations, setRecommendations] = useState([]);
   const [allItems, setAllItems] = useState([]);  // State untuk menyimpan daftar barang
 
-  const BASE_URL = "https://66decc25-a2cd-4922-8b07-89275b3e82e4-00-35iyrzpfynthr.pike.replit.dev.repl.co";
+  const BASE_URL = "https://66decc25-a2cd-4922-8b07-89275b3e82e4-00-35iyrzpfynthr.pike.replit.dev";
 
   // Ambil daftar barang dari backend saat komponen dimuat
   useEffect(() => {
