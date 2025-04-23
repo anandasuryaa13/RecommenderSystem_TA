@@ -120,7 +120,7 @@ const RecommendationUI = () => {
 
       <Card className="mb-4">
         <CardContent className="space-y-2">
-          <h3 className="font-semibold">Silahkan Pilih Item yang Diinginkan</h3>
+          <h3 className="font-semibold">1. Silahkan Pilih Item yang Diinginkan</h3>
 
           {/* Filter Brand */}
           <div className="mb-4">
