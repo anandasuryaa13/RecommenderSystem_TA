@@ -120,7 +120,7 @@ const RecommendationUI = () => {
 
       <Card className="mb-4">
         <CardContent className="space-y-2">
-          <h3 className="font-semibold">Silahkan Pilih Item yang Diinginkan</h3>
+          <h3 className="font-semibold">SILAHKAN PILIH ITEM YANG DIINGINKAN</h3>
 
           {/* Filter Brand */}
           <div className="mb-4">
@@ -198,7 +198,7 @@ const RecommendationUI = () => {
 
       <Card className="mb-4">
         <CardContent className="space-y-2">
-          <h3 className="font-semibold">2. Pilih Preferensi Rekomendasi:</h3>
+          <h3 className="font-semibold">PILIH PREFERENSI REKOMENDASI</h3>
           <div className="flex gap-4">
             {['item', 'user', 'brand'].map((type) => (
               <Label key={type} className="flex items-center space-x-2">
