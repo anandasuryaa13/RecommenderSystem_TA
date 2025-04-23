@@ -19,7 +19,7 @@ const RecommendationUI = () => {
   const [selectedBrand, setSelectedBrand] = useState('Semua');
   const [darkMode, setDarkMode] = useState(false);
 
-  const BASE_URL = "https://web-production-1323a.up.railway.app";  // Ganti dengan URL backend kamu
+  const BASE_URL = "http://127.0.0.1:8000";  // Ganti dengan URL backend kamu
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -120,7 +120,7 @@ const RecommendationUI = () => {
 
       <Card className="mb-4">
         <CardContent className="space-y-2">
-          <h3 className="font-semibold">1. Silahkan Pilih Item yang Diinginkan</h3>
+          <h3 className="font-semibold">Silahkan Pilih Item yang Diinginkan</h3>
 
           {/* Filter Brand */}
           <div className="mb-4">
