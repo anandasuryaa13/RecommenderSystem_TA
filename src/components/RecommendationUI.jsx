@@ -19,7 +19,7 @@ const RecommendationUI = () => {
   const [selectedBrand, setSelectedBrand] = useState('Semua');
   const [darkMode, setDarkMode] = useState(false);
 
-  const BASE_URL = "http://127.0.0.1:8000";  // Ganti dengan URL backend kamu
+  const BASE_URL = "https://web-production-1323a.up.railway.app";  // URL backend 
 
   useEffect(() => {
     const fetchItems = async () => {
